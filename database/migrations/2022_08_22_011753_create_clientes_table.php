@@ -24,7 +24,6 @@ class CreateClientesTable extends Migration
             $table->string('Correo_cliente');
             $table->String('latidud');
             $table->String('longitud');
-            $table->enum('tipo', ['SI', 'NO'])->default('NO');
 
             $table->timestamps();
         });

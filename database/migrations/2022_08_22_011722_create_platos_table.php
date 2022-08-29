@@ -20,6 +20,8 @@ class CreatePlatosTable extends Migration
             $table->string('Caracteristicas_plato');
             $table->string('imagen')->nullable();
 
+            $table->enum('tipo', ['Semanal', 'Dominical'])->default('Semanal');
+
             $table->unsignedBigInteger('categoria_id');
             $table->foreign('categoria_id')->references('id')->on('categorias')->onDelete('cascade');
 

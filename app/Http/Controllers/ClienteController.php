@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
+use App\Models\User;
 use Illuminate\Http\Request;
 use DB;
+use App\Database;
 use Carbon\Carbon;
+use App\Notifications\ClienteNotification;
+use Illuminate\Support\Facades\Notification; 
+
 
 
 class ClienteController extends Controller
@@ -14,6 +19,8 @@ class ClienteController extends Controller
     public function index()
     {
         $clientes = Cliente::get();
+        //auth()->user()->notify(new ClienteNotification($clientes));
+        
         return view('cliente.listar',compact('clientes'));
     }
 
@@ -53,6 +60,7 @@ class ClienteController extends Controller
             'latidud' => $data['latidud'],
             'longitud' => $data['longitud'],
         ]);
+        
         return redirect()->route('cliente.index')->with('success', 'Se registró correctamente');
     }
 
@@ -79,8 +87,8 @@ class ClienteController extends Controller
      */
     public function edit(Cliente $cliente)
     {
-        return response()->json($cliente);
-        //return view('cliente.edit',compact('cliente'));
+        //return response()->json($cliente);
+        return view('cliente.edit',compact('cliente'));
     }
 
     /**
@@ -113,77 +121,16 @@ class ClienteController extends Controller
     }
 
     public function listvip(){
-        $clientes = Cliente::where('tipo','=','SI')->get();
+        $users = User::all();
+        $clientes = Cliente::where('tipo','=','SI')->get();       
         return view('cliente.listvip',compact('clientes'));
     }
 
     public function listcumple(){
-        
-        $news = DB::table('clientes')
-                        ->select('*')
-                        ->whereRaw("TIMESTAMPDIFF(YEAR, FechaNacimiento_cliente, CURDATE()) < TIMESTAMPDIFF(YEAR, FechaNacimiento_cliente, ADDDATE(CURDATE(), 7))")
+        $users = User::all();
+        $news = Cliente::whereRaw("TIMESTAMPDIFF(YEAR, FechaNacimiento_cliente, CURDATE()) < TIMESTAMPDIFF(YEAR, FechaNacimiento_cliente, ADDDATE(CURDATE(), 7))")
                         ->get();
-        //$otros = json_decode( json_encode($clientes), false); 
-        //$news = (array)$otros;           
         return view('cliente.listcumple', compact('news'));
-        //return response()->json($news);
     }
 
-    public function getNotificationsData(){
-        // For the sake of simplicity, assume we have a variable called
-    // $notifications with the unread notifications. Each notification
-    // have the next properties:
-    // icon: An icon for the notification.
-    // text: A text for the notification.
-    // time: The time since notification was created on the server.
-    // At next, we define a hardcoded variable with the explained format,
-    // but you can assume this data comes from a database query.
-
-    $notifications = [
-        [
-            'icon' => 'fas fa-fw fa-envelope',
-            'text' => rand(0, 10) . ' new messages',
-            'time' => rand(0, 10) . ' minutes',
-        ],
-        [
-            'icon' => 'fas fa-fw fa-users text-primary',
-            'text' => rand(0, 10) . ' friend requests',
-            'time' => rand(0, 60) . ' minutes',
-        ],
-        [
-            'icon' => 'fas fa-fw fa-file text-danger',
-            'text' => rand(0, 10) . ' new reports',
-            'time' => rand(0, 60) . ' minutes',
-        ],
-    ];
-
-    // Now, we create the notification dropdown main content.
-
-    $dropdownHtml = '';
-
-    foreach ($notifications as $key => $not) {
-        $icon = "<i class='mr-2 {$not['icon']}'></i>";
-
-        $time = "<span class='float-right text-muted text-sm'>
-                   {$not['time']}
-                 </span>";
-
-        $dropdownHtml .= "<a href='#' class='dropdown-item'>
-                            {$icon}{$not['text']}{$time}
-                          </a>";
-
-        if ($key < count($notifications) - 1) {
-            $dropdownHtml .= "<div class='dropdown-divider'></div>";
-        }
-    }
-
-    // Return the new notification data.
-
-    return [
-        'label'       => count($notifications),
-        'label_color' => 'danger',
-        'icon_color'  => 'dark',
-        'dropdown'    => $dropdownHtml,
-    ];
-    }
 }

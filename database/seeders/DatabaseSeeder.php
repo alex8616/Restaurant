@@ -4,6 +4,9 @@ namespace Database\Seeders;
 use App\Models\Categoria;
 use App\Models\Cliente;
 use App\Models\Plato;
+use App\Models\Comanda;
+use App\Models\DetalleComanda;
+
 
 use Illuminate\Database\Seeder;
 

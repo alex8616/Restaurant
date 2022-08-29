@@ -16,9 +16,10 @@ class PlatoFactory extends Factory
         return [
             'Nombre_plato'=> $this->faker->word(),
             'Precio_plato'=> $this->faker->numberBetween(10, 100),
-            'Caracteristicas_plato'=> $this->faker->paragraph(4, false),
+            'Caracteristicas_plato'=> $this->faker->word(),
             'imagen'=> $this->faker->imageUrl(640, 480, 'animals', true),
             'categoria_id'=> Categoria::all()->random()->id,
+            'tipo' => $this->faker->randomElement(['Semanal','Dominical']),
         ];
     }
 }

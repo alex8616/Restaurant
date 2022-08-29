@@ -9,264 +9,188 @@
 @stop
 
 @section('content')
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong> Guardado!</strong> {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+<section class="wrapper">
+    <div class="container-fostrap">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                @foreach($platos as $plato)
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="card">
+                            <a class="img-card" href="#">
+                            @if (isset($plato->imagen))
+                                <img class="img-thumbnail" src="{{ asset('storage' . '/' . $plato->imagen) }}"/>
+                            @else
+                                <img class="img-thumbnail" src="{{ asset('storage/uploads/nofound.jpg') }}"/>
+                            @endif
+                          </a>
+                            <div class="card-content">
+                                <h4 class="card-title">
+                                    <a href="#"> {{$plato->Nombre_plato}}</a>
+                                </h4><br><br>
+                                <p class="" style="float:left">
+                                    <i class="fa-solid fa-money-bill-1-wave"></i> Precio: {{ $plato->Precio_plato }} Bs.                                
+                                </p>
+                                <p style="float:right">
+                                    <i class="fa-solid fa-calendar-days"></i> Registro: {{date('d/m/Y');}}
+                                </p>
+                            </div><br><br>
+                            <div class="card-read-more">
+                                <a href="{{route('plato.edit',$plato)}}"class="btn btn-outline-info" style="width:48%">EDITAR</a>
+                                <a href="{{route('plato.show',$plato)}}"class="btn btn-outline-warning" style="width:48%">VER</a>
+                            </div><br>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <div>
+                    {{$platos->links()}}
+                </div>
+            </div>
         </div>
-    @elseif(session('update'))
-        <div class="alert alert-primary alert-dismissible fade show" role="alert">
-            <strong> Editado!</strong> {{ session('update') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-<section class="section-products">
-		<div class="container">
-				<div class="row">
-						<!-- Single Product -->
-                        @foreach($platos as $plato)
-						<div class="col-md-6 col-lg-4 col-xl-3">
-								<div id="product-1" class="single-product">
-                                @if (isset($plato->imagen))
-                                    <img class="img-thumbnail" src="{{ asset('storage' . '/' . $plato->imagen) }}" style="width: 100%; height: 200px;"/>
-                                @else
-                                    <img class="img-thumbnail" src="{{ asset('storage/uploads/nofound.jpg') }}"/>
-                                @endif
-										<div class="part-1">
-											<ul>
-												<li><a href="{{route('plato.edit',$plato)}}"><i class="fa-solid fa-pen-to-square"></i></i></a></li>
-												<li><a href="{{route('plato.show',$plato)}}"><i class="fa-solid fa-eye"></i></a></li>
-												<li>
-                                                    <form action="{{ route('plato.destroy', $plato) }}" method="POST" class="formulario-eliminar">
-                                                        @csrf
-                                                        @method('delete')
-                                                            <button type="submit" class="btn-show"><i class="fa-solid fa-trash-can"></i></button>
-                                                    </form>
-                                                </li>
-											</ul>
-										</div>
-										<div class="part-2">
-                                        <h4 class="food">
-                                            {{$plato->Nombre_plato}}
-                                        </h4>
-                                        <h6 class="otro">
-                                            <i class="fa-solid fa-money-bill-1-wave"></i> {{ $plato->Precio_plato }} Bs.|
-                                            <i class="fa-solid fa-calendar-days"></i> {{date('d/m/Y');}}
-                                        </h6> 
-										</div>
-                                </div>
-						</div>
-                        
-                        @endforeach
-				</div>
-        </div>
-        <div>
-            {{$platos->links()}}
-        </div>
+    </div>
 </section>
 
 @stop
-
+@section('content_top_nav_right')
+<li class="nav-item dropdown">
+    <a class="nav-link" data-toggle="dropdown" href="#">
+        <i class="fas fa-bell"></i>
+        @if (count(auth()->user()->unreadNotifications))
+        <span class="badge badge-warning">{{ count(auth()->user()->unreadNotifications) }}</span>
+            
+        @endif
+        </span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notifi">
+    <span class="dropdown-header" >Notificaciones Sin Leer</span>
+        @forelse (auth()->user()->unreadNotifications as $notification)
+        <a href="{{ route('cliente.listcumple') }}" class="dropdown-item">
+        <i class="fa-solid fa-cake-candles"></i> Se acerca el cumpleaños de <strong>{{ $notification->data['Nombre_cliente']}}</strong>
+        <span class="ml-3 float-right text-muted text-sm">{{ $notification->created_at->diffForHumans() }}</span>
+        </a>
+        @empty
+            <span class="ml-3 float-right text-muted text-sm">Sin notificaciones por leer </span><br> 
+        @endforelse
+        <a href="{{ route('markAsRead') }}" class="dropdown-item dropdown-footer">Marcar Todos LEIDO</a>
+        <div class="dropdown-divider"></div>
+            <span class="dropdown-header">Notificaciones Leidas</span>
+            @forelse (auth()->user()->readNotifications as $notification)
+            <a href="{{ route('cliente.listcumple') }}" class="dropdown-item">
+            <i class="fa-solid fa-check-double"></i> {{ $notification->data['Nombre_cliente'] }}
+            <span class="ml-3 float-right text-muted text-sm">{{ $notification->data['Nombre_cliente'], $notification->created_at->diffForHumans() }}</span>
+            </a>
+            @empty
+            <span class="ml-3 float-right text-muted text-sm">Sin notificaciones leidas</span>
+        @endforelse
+    </div>
+    </li>
+@endsection
 @section('css')
 <link href="{{asset('css/header.css')}}" rel="stylesheet" type="text/css" />
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+<style>
+        @import url(https://fonts.googleapis.com/css?family=Roboto:400,100,900);
 
-.btn-show{
-  text-transform: uppercase;
-  text-align: center;
-  border-color: #fff;
-  margin-bottom: -25px;
-  overflow: hidden;
-  background-color: #ffffff;
-  width: 40px;
-  height: 40px;
-}
-.btn-show:hover {
-    color: #fe302f;
-  transition: 250ms;
-  text-decoration: none;
-  
-}
-
-.img-thumbnail {
-    -webkit-transform: scale(1);
-	transform: scale(1);
-	-webkit-transition: .3s ease-in-out;
-	transition: .3s ease-in-out;
-}
-
-.img-thumbnail:hover {
-    -webkit-transform: scale(1.2);
-	transform: scale(1.2);
-}
-
-body {
-    font-family: "Poppins", sans-serif;
-    color: #444444;
-}
-
-a,
-a:hover {
-    text-decoration: none;
-    color: inherit;
-}
-
-.section-products {
-    padding: 4px 0 100px;
-}
-
-.section-products .header {
-    margin-bottom: 50px;
-}
-
-.section-products .header h3 {
-    font-size: 1rem;
-    color: #fe302f;
-    font-weight: 500;
-}
-
-.section-products .header h2 {
-    font-size: 2.2rem;
+    html,
+    body {
+    -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    height: 100%;
+    width: 100%; 
+    background: #FFF;
+    font-family: 'Roboto', sans-serif;
     font-weight: 400;
-    color: #444444; 
-}
-
-.section-products .single-product {
-    margin-bottom: 26px;
-}
-
-.section-products .single-product .part-1 {
-    position: relative;
-    height: 65px;
-    max-height: 310px;
-    margin-bottom: -25px;
-    overflow: hidden;
-}
-
-.section-products .single-product .part-1::before {
-		position: absolute;
-		content: "";
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		z-index: -1;
-		transition: all 0.3s;
-}
-
-.section-products .single-product:hover .part-1::before {
-		transform: scale(1.2,1.2) rotate(5deg);
-}
-
-.section-products #product-1 .part-1::before {
-    background-size: cover;
-		transition: all 0.3s;
-}
-
-.section-products #product-2 .part-1::before {
-    background: url("https://i.ibb.co/cLnZjnS/2.jpg") no-repeat center;
-    background-size: cover;
-}
-
-.section-products #product-3 .part-1::before {
-    background: url("https://i.ibb.co/L8Nrb7p/1.jpg") no-repeat center;
-    background-size: cover;
-}
-
-.section-products #product-4 .part-1::before {
-    background: url("https://i.ibb.co/cLnZjnS/2.jpg") no-repeat center;
-    background-size: cover;
-}
-
-.section-products .single-product .part-1 .discount,
-.section-products .single-product .part-1 .new {
-    position: absolute;
-    top: 15px;
-    left: 20px;
-    color: #ffffff;
-    background-color: #fe302f;
-    padding: 2px 8px;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-}
-
-.section-products .single-product .part-1 .new {
-    left: 0;
-    background-color: #444444;
-}
-
-.section-products .single-product .part-1 ul {
-    position: absolute;
-    bottom: -41px;
-    left: 20px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    opacity: 0;
-    transition: bottom 0.5s, opacity 0.5s;
-}
-
-.section-products .single-product:hover .part-1 ul {
-    bottom: 30px;
-    opacity: 1;
-}
-
-.section-products .single-product .part-1 ul li {
-    display: inline-block;
-    margin-right: 4px;
-}
-
-.section-products .single-product .part-1 ul li a {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    background-color: #ffffff;
-    color: #444444;
-    text-align: center;
-    box-shadow: 0 2px 20px rgb(50 50 50 / 10%);
-    transition: color 0.2s;
-}
-
-.section-products .single-product .part-1 ul li a:hover {
-    color: #fe302f;
-}
-
-.section-products .single-product .part-2 .product-title {
-    font-size: 1rem;
-}
-
-.section-products .single-product .part-2 h4 {
-    display: inline-block;
-    font-size: 1rem;
-}
-
-.section-products .single-product .part-2 .product-old-price {
-    position: relative;
-    padding: 0 7px;
-    margin-right: 2px;
-    opacity: 0.6;
-}
-
-.section-products .single-product .part-2 .product-old-price::after {
-    position: absolute;
-    content: "";
-    top: 50%;
-    left: 0;
+    }
+    
+    .wrapper {
+    display: table;
+    height: 100%;
     width: 100%;
-    height: 1px;
-    background-color: #444444;
-    transform: translateY(-50%);
-}
-    </style>
+    }
 
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" referrerpolicy="no-referrer" /> 
+    .container-fostrap {
+    display: table-cell;
+    padding: 1em;
+    text-align: center;
+    vertical-align: middle;
+    }
+    .fostrap-logo {
+    width: 100px;
+    margin-bottom:15px
+    }
+    h1.heading {
+    color: #fff;
+    font-size: 1.15em;
+    font-weight: 900;
+    margin: 0 0 0.5em;
+    color: #505050;
+    }
+    @media (min-width: 450px) {
+    h1.heading {
+        font-size: 3.55em;
+    }
+    }
+    @media (min-width: 760px) {
+    h1.heading {
+        font-size: 3.05em;
+    }
+    }
+    @media (min-width: 900px) {
+    h1.heading {
+        font-size: 3.25em;
+        margin: 0 0 0.3em;
+    }
+    } 
+    .card {
+    display: block; 
+        margin-bottom: 20px;
+        line-height: 1.42857143;
+        background-color: #fff;
+        border-radius: 2px;
+        box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12); 
+        transition: box-shadow .25s; 
+    }
+    .card:hover {
+    box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    }
+    .img-card {
+    width: 100%;
+    height:200px;
+    border-top-left-radius:2px;
+    border-top-right-radius:2px;
+    display:block;
+        overflow: hidden;
+    }
+    .img-card img{
+    width: 100%;
+    height: 200px;
+    object-fit:cover; 
+    transition: all .25s ease;
+    } 
+    .card-content {
+    padding:15px;
+    text-align:left;
+    }
+    .card-title {
+    margin-top:0px;
+    font-weight: 700;
+    font-size: 1.65em;
+    }
+    .card-title a {
+    color: #000;
+    text-decoration: none !important;
+    }
+    .card-read-more {
+    border-top: 1px solid #D4D4D4;
+    }
+    .card-read-more a {
+    text-decoration: none !important;
+    padding:10px;
+    font-weight:600;
+    text-transform: uppercase
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" referrerpolicy="no-referrer" /> 
 @stop
 
 @section('js')
@@ -278,30 +202,70 @@ a:hover {
     <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap4.min.js"></script>
     <script>
-        $('#plato').DataTable({
-            responsive: true,
-            autoWidth: false,
-            "language": {
-            "lengthMenu": "Mostrar  " +
-                                   `<select class="custon-select custom-select-sm form-control form-control-sm"> 
-                                        <option value='10'>10</option>
-                                        <option value='25'>25</option>
-                                        <option value='50'>50</option>
-                                        <option value='100'>100</option>
-                                        <option value='-1'>All</option>
-                                    </select>`
-                                    + " Registros Por Pagina",
-            "zeroRecords": "No Se Encontro Ningun Usuario - Lo Siento",
-            "info": "Mostrando La Pagina _PAGE_ de _PAGES_",
-            "infoEmpty": "Ningun Registro Coincide Con Lo Buscado",
-            "infoFiltered": "(Filtrado de _MAX_ Registros Totales)",
-            'search': 'Buscar:',
-            'paginate':{
-                'next': 'Siguiente',
-                'previous': 'Anterior'
+       // VARIABLES
+        const rangeInput = document.querySelector('input[type = "range"]');
+        const imageList = document.querySelector(".image-list");
+        const searchInput = document.querySelector('input[type="search"]');
+        const btns = document.querySelectorAll(".view-options button");
+        const photosCounter = document.querySelector(".toolbar .counter span");
+        const imageListItems = document.querySelectorAll(".image-list li");
+        const captions = document.querySelectorAll(".image-list figcaption p:first-child");
+        const myArray = [];
+        let counter = 1;
+        const active = "active";
+        const listView = "list-view";
+        const gridView = "grid-view";
+        const dNone = "d-none";
+
+        // SET VIEW
+        for (const btn of btns) {
+        btn.addEventListener("click", function() {
+            const parent = this.parentElement;
+            document.querySelector(".view-options .active").classList.remove(active);
+            parent.classList.add(active);
+            this.disabled = true;
+            document.querySelector('.view-options [class^="show-"]:not(.active) button').disabled = false;
+
+            if (parent.classList.contains("show-list")) {
+            parent.previousElementSibling.previousElementSibling.classList.add(dNone);
+            imageList.classList.remove(gridView);
+            imageList.classList.add(listView);
+            } else {
+            parent.previousElementSibling.classList.remove(dNone);
+            imageList.classList.remove(listView);
+            imageList.classList.add(gridView);
+            }
+        });
+        }
+
+        // SET THUMBNAIL VIEW - CHANGE CSS VARIABLE
+        rangeInput.addEventListener("input", function() {
+        document.documentElement.style.setProperty("--minRangeValue",`${this.value}px`);
+        });
+
+        // SEARCH FUNCTIONALITY
+        for (const caption of captions) {
+        myArray.push({
+            id: counter++,
+            text: caption.textContent
+        });
+        }
+
+        searchInput.addEventListener("keyup", keyupHandler);
+
+        function keyupHandler() {
+        for (const item of imageListItems) {
+            item.classList.add(dNone);
+        }
+        const text = this.value;
+        const filteredArray = myArray.filter(el => el.text.includes(text));
+        if (filteredArray.length > 0) {
+            for (const el of filteredArray) {
+            document.querySelector(`.image-list li:nth-child(${el.id})`).classList.remove(dNone);
             }
         }
-        });
+        photosCounter.textContent = filteredArray.length;
+        }
     </script>
     
     @if(session('eliminar')=='ok')

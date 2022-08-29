@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
+use App\Models\Cliente;
+
 
 class HomeController extends Controller
 {
@@ -11,7 +13,7 @@ class HomeController extends Controller
     } 
     public function index()
     {
-        
+        $clientes = Cliente::all(); 
         //$ventasmes = DB::select('SELECT month(comandas.fecha_venta) as mes, sum(comandas.total) as totalmes from comandas  group by month(comandas.fecha_venta) order by month(comandas.fecha_venta) desc limit 12');
 
         $ventasmes = DB::select('SELECT month(comandas.fecha_venta) as mes, sum(comandas.total) as totalmes from comandas  group by month(comandas.fecha_venta) order by month(comandas.fecha_venta) desc limit 12');
@@ -23,18 +25,6 @@ class HomeController extends Controller
         inner join detalle_comandas on platos.id=detalle_comandas.plato_id 
         inner join comandas on detalle_comandas.comanda_id=comandas.id where year(comandas.fecha_venta)=year(curdate()) 
         group by platos.Nombre_plato, platos.id order by sum(detalle_comandas.cantidad) desc limit 10');
-
-
-        /*
-        $productosvendidos = DB::select('SELECT a.codigo as codigo, 
-        sum(dv.cantidad) as cantidad, a.nombre as nombre , a.id as id , a.stock as stock from articulos a
-        inner join detalle_ventas dv on a.id=dv.articulo_id 
-        inner join ventas v on dv.venta_id=v.id where v.estado="VALIDO" 
-        and year(v.fecha_venta)=year(curdate()) 
-        group by a.codigo ,a.nombre, a.id , a.stock order by sum(dv.cantidad) desc limit 10');
-
-        */
-
-        return view('home.dashboard', compact('ventasmes', 'ventasdia', 'productosvendidos'));
+        return view('home.dashboard', compact('ventasmes', 'clientes', 'ventasdia', 'productosvendidos'));
     }
 }

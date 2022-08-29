@@ -28,6 +28,10 @@
                             href="#list-profile" role="tab" aria-controls="profile">
                             Historial de compras
                         </a>
+                        <a class="list-group-item list-group-item-action" id="list-profile-mensualidad" data-toggle="list"
+                            href="#list-mensualidad" role="tab" aria-controls="profile">
+                            Historial de Pesnionado
+                        </a>
                     </div>
                 </div>
             </div>
@@ -50,11 +54,6 @@
                                         {{ ucwords($cliente->Nombre_cliente) }} {{ucwords($cliente->Apellidop_cliente)}}
                                     </p>
                                     <hr>
-                                    <strong><i class="fas fa-address-card mr-1"></i> Numero de DNI</strong>
-                                    <p class="text-muted">
-                                        {{ $cliente->id }}
-                                    </p>
-                                    <hr>
                                     <strong>
                                         <i class="fas fa-map-marked-alt mr-1"></i>
                                         Dirección</strong>
@@ -62,6 +61,10 @@
                                         {{ $cliente->Direccion_cliente }}
                                     </p>
                                     <hr>
+                                    <strong><i class="fa-solid fa-at"></i> Correo electrónico</strong>
+                                    <p class="text-muted">
+                                        {{ $cliente->Correo_cliente }}
+                                    </p>                                    
                                 </div>
 
                                 <div class="form-group col-md-6">
@@ -75,12 +78,7 @@
                                     <p class="text-muted">
                                         {{ $cliente->Celular_cliente }}
                                     </p>
-                                    <hr>
-                                    <strong><i class="fas fa-map-envelope-alt mr-1"></i> Correo electrónico</strong>
-                                    <p class="text-muted">
-                                        {{ $cliente->Correo_cliente }}
-                                    </p>
-                                    <hr>
+                                    <hr>                                    
                                 </div>
                             </div>
                         </div>
@@ -140,6 +138,37 @@
                         </div>
 
                     </div>
+                    <div class="tab-pane fade" id="list-mensualidad" user="tabpanel" aria-labelledby="list-profile-mensualidad">
+
+
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>Historial de Mensualidad</h4>
+                            </div>
+                        </div>
+                        <div class="profile-feed">
+                            <div class="d-flex align-items-start profile-feed-item">
+
+                                <div class="table-responsive">
+                                    <table id="order-listing"
+                                        class="table table-striped table-bordered shadow-lg mt-4 dt-responsive nowrap cliente">
+                                        <thead class="bg-primary text-white">
+                                            <tr>
+                                                <th>Fecha Inicio</th>
+                                                <th>Fecha Final</th>
+                                                <th style="width:50px; text-align: right;">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                           
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -154,7 +183,40 @@
     <link href="{{asset('css/header.css')}}" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 @stop
-
+@section('content_top_nav_right')
+<li class="nav-item dropdown">
+    <a class="nav-link" data-toggle="dropdown" href="#">
+        <i class="fas fa-bell"></i>
+        @if (count(auth()->user()->unreadNotifications))
+        <span class="badge badge-warning">{{ count(auth()->user()->unreadNotifications) }}</span>
+            
+        @endif
+        </span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notifi">
+    <span class="dropdown-header" >Notificaciones Sin Leer</span>
+        @forelse (auth()->user()->unreadNotifications as $notification)
+        <a href="{{ route('cliente.listcumple') }}" class="dropdown-item">
+        <i class="fa-solid fa-cake-candles"></i> Se acerca el cumpleaños de <strong>{{ $notification->data['Nombre_cliente']}}</strong>
+        <span class="ml-3 float-right text-muted text-sm">{{ $notification->created_at->diffForHumans() }}</span>
+        </a>
+        @empty
+            <span class="ml-3 float-right text-muted text-sm">Sin notificaciones por leer </span><br> 
+        @endforelse
+        <a href="{{ route('markAsRead') }}" class="dropdown-item dropdown-footer">Marcar Todos LEIDO</a>
+        <div class="dropdown-divider"></div>
+            <span class="dropdown-header">Notificaciones Leidas</span>
+            @forelse (auth()->user()->readNotifications as $notification)
+            <a href="{{ route('cliente.listcumple') }}" class="dropdown-item">
+            <i class="fa-solid fa-check-double"></i> {{ $notification->data['Nombre_cliente'] }}
+            <span class="ml-3 float-right text-muted text-sm">{{ $notification->data['Nombre_cliente'], $notification->created_at->diffForHumans() }}</span>
+            </a>
+            @empty
+            <span class="ml-3 float-right text-muted text-sm">Sin notificaciones leidas</span>
+        @endforelse
+    </div>
+    </li>
+@endsection
 @section('js')
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>

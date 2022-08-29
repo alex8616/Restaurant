@@ -18,7 +18,7 @@ class PlatoController extends Controller
     public function index(Request $request)
     {
         $buscarpor=$request->get('buscarpor');
-        $platos=Plato::where('Nombre_plato','like','%'.$buscarpor.'%')->orderBy('id', 'desc')->paginate(12);
+        $platos=Plato::where('Nombre_plato','like','%'.$buscarpor.'%')->orderBy('id', 'desc')->paginate(6);
         $categorias = new Categoria;
         return view('plato.listar',compact('platos','categorias','buscarpor'));
     }
@@ -52,6 +52,7 @@ class PlatoController extends Controller
             'Precio_plato' => 'required',
             'Caracteristicas_plato' => 'required',
             'categoria_id' => 'required',
+            'tipo' => 'required',
            ]);
         
          $datosPlato = request()->except('_token');

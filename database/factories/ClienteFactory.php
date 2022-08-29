@@ -23,7 +23,6 @@ class ClienteFactory extends Factory
             'Correo_cliente'=> $this->faker->email(),
             'latidud'=> $this->faker->phoneNumber(),
             'longitud'=> $this->faker->phoneNumber(),
-            'tipo' => $this->faker->randomElement(['SI','NO']),
         ];
     }
 }

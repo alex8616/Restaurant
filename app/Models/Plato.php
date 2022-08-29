@@ -9,7 +9,7 @@ class Plato extends Model
 {
     use HasFactory;
     protected $fillable = ['Nombre_plato','Precio_plato',
-                            'Caracteristicas_plato','imagen','categoria_id'];
+                            'Caracteristicas_plato','imagen','categoria_id','tipo'];
                             
     //Relacion de uno a muchos inversa
     public function categoria(){

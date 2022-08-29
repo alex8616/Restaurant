@@ -41,7 +41,12 @@ Route::get('comanda/pdf/{comanda}', [ComandaController::class, 'pdf'])->name('co
 Route::get('reports', ReportesController::class)->middleware('auth')->name('reports.reportes');
 
 Route::get('cliente.listvip', [ClienteController::class, 'listvip'])->name('cliente.listvip');
-
 Route::get('cliente.listcumple', [ClienteController::class, 'listcumple'])->name('cliente.listcumple');
 
 Route::get('notifications/get',[ClienteController::class, 'getNotificationsData'])->name('notifications.get');
+
+
+Route::get('markAsRead', function(){
+    auth()->user()->unreadNotifications->markAsRead();
+    return redirect()->back();
+})->name('markAsRead');

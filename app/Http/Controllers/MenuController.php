@@ -15,9 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Menu;
 use Dompdf\options;
-use Dompdf;
-
-
+use Dompdf\Dompdf;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class MenuController extends Controller
@@ -84,35 +82,17 @@ class MenuController extends Controller
 
     public function pdf(Menu $menu){
 
-        $options = new Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isRemoteEnabled', true);
-        $platos = Plato::get();
         $detallemenus = $menu->detallemenus;
         //$pdf = PDF::loadView('menu.pdf', compact('menu', 'platos', 'detallemenus'))->setOptions(['defaultFont' => 'sans-serif'])->setOptions(['isRemoteEnabled',TRUE]);
-        //return $pdf->stream('Reporte_de_venta'.$menu->id.'pdf');
-
-        $pdf = app('dompdf.wrapper');
-      
-        $contxt = stream_context_create([
-            'ssl' => [
-                'verify_peer' => FALSE,
-                'verify_peer_name' => FALSE,
-                'allow_self_signed' => TRUE,
-            ]
-        ]);
-
-        $pdf = PDF::setOptions(['isHTML5ParserEnabled' => true, 'isRemoteEnabled' => true]);
-
-        $pdf->getDomPDF()->setHttpContext($contxt);
-
-        //Cargar vista/tabla html y enviar varibles con la data
-        $pdf = PDF::loadView('menu.pdf', compact('menu', 'platos', 'detallemenus'))->setOptions(['defaultFont' => 'sans-serif'])->setOptions(['isRemoteEnabled',TRUE]);
-        //Establecer orientación horizontal al pdf
-        $pdf->setPaper('A4', 'landscape');
-
-        //descargar la vista en formato pdf 
-        $fecha = date('Y-m-d');
-        //return $pdf->download("MyPdf.pdf");
+        
+        $pdf = PDF::loadView('menu.pdf', compact('menu', 'detallemenus'))
+        ->setPaper('a4')
+                  ->setOptions([
+                      'tempDir' => public_path(),
+                      'chroot'  => public_path(),
+                  ]);
+        
+        return $pdf->stream('Reporte_de_venta.pdf');
+        $pdf = PDF::loadView('comanda.pdf', compact('comanda', 'subtotal', 'detallecomandas'))->setOptions(['defaultFont' => 'sans-serif'])->setPaper(array(0,0,150,500), 'portrait');;
     }
 }

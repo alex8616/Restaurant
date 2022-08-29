@@ -24,7 +24,7 @@
                     <option value="" data-icon="fa-solid fa-bowl-rice" disabled selected>Buscar Plato</option>
                     @foreach ($platos as $plato)
                         <option value="{{ $plato->id }}_{{ $plato->stock }}_{{ $plato->Precio_plato }}">
-                            {{ $plato->Nombre_plato }} {{ $plato->Precio_plato }}
+                            {{ $plato->Nombre_plato }}    ---   {{ $plato->tipo }}
                          </option>
                       @endforeach
                    </select>
@@ -132,7 +132,40 @@
 </div>
 </form>
 @stop
-
+@section('content_top_nav_right')
+<li class="nav-item dropdown">
+    <a class="nav-link" data-toggle="dropdown" href="#">
+        <i class="fas fa-bell"></i>
+        @if (count(auth()->user()->unreadNotifications))
+        <span class="badge badge-warning">{{ count(auth()->user()->unreadNotifications) }}</span>
+            
+        @endif
+        </span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notifi">
+    <span class="dropdown-header" >Notificaciones Sin Leer</span>
+        @forelse (auth()->user()->unreadNotifications as $notification)
+        <a href="{{ route('cliente.listcumple') }}" class="dropdown-item">
+        <i class="fa-solid fa-cake-candles"></i> Se acerca el cumpleaños de <strong>{{ $notification->data['Nombre_cliente']}}</strong>
+        <span class="ml-3 float-right text-muted text-sm">{{ $notification->created_at->diffForHumans() }}</span>
+        </a>
+        @empty
+            <span class="ml-3 float-right text-muted text-sm">Sin notificaciones por leer </span><br> 
+        @endforelse
+        <a href="{{ route('markAsRead') }}" class="dropdown-item dropdown-footer">Marcar Todos LEIDO</a>
+        <div class="dropdown-divider"></div>
+            <span class="dropdown-header">Notificaciones Leidas</span>
+            @forelse (auth()->user()->readNotifications as $notification)
+            <a href="{{ route('cliente.listcumple') }}" class="dropdown-item">
+            <i class="fa-solid fa-check-double"></i> {{ $notification->data['Nombre_cliente'] }}
+            <span class="ml-3 float-right text-muted text-sm">{{ $notification->data['Nombre_cliente'], $notification->created_at->diffForHumans() }}</span>
+            </a>
+            @empty
+            <span class="ml-3 float-right text-muted text-sm">Sin notificaciones leidas</span>
+        @endforelse
+    </div>
+    </li>
+@endsection
 @section('css')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css"></link>
     <link href="{{asset('css/header.css')}}" rel="stylesheet" type="text/css"/>

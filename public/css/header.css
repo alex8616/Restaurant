@@ -22,8 +22,40 @@
 }
 #title{
     font-size: 25px;
-      color: #e8f380;
-      border-bottom: 2px solid #e8f380;
-      padding-bottom: 12px;
-      line-height: 3;
+    color: #e8f380;
+    border-bottom: 2px solid #e8f380;
+    padding-bottom: 12px;
+    line-height: 3;
+}
+#notifi{
+  width:100%; 
+  height:600px; 
+  overflow: scroll;
+  overflow-x: hidden;
+}
+#notifi::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+#notifi::-webkit-scrollbar:vertical {
+  width:10px;
+  background-color: floralwhite;
+}
+
+#notifi::-webkit-scrollbar-button:increment,.contenedor::-webkit-scrollbar-button {
+  display: none;
+} 
+
+#notifi::-webkit-scrollbar:horizontal {
+  height: 10px;
+}
+
+#notifi::-webkit-scrollbar-thumb {
+  background-color: #797979;
+  border-radius: 20px;
+  border: 2px solid #f1f2f3;
+}
+
+#notifi::-webkit-scrollbar-track {
+  border-radius: 10px;  
 }
